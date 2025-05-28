@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en" class="dark"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionHub - Unify Your AI Image Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // or 'media'
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'vision-dark': '#1a202c',
+                        'vision-dark-secondary': '#2d3748',
+                        'vision-accent': '#4299e1', 
+                        'vision-accent-hover': '#2b6cb0',
+                        'vision-text': '#e2e8f0', 
+                        'vision-text-secondary': '#a0aec0', 
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'slide-in-left': 'slideInLeft 0.5s ease-out forwards',
+                        'spin': 'spin 1s linear infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        spin: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.vision-dark');
+            color: theme('colors.vision-text');
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(26, 32, 44, 0.8); 
+            backdrop-filter: blur(10px);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .faq-question summary::-webkit-details-marker { display: none; }
+        .faq-question summary { list-style: none; }
+        .modal { transition: opacity 0.25s ease; }
+        .modal-content { transition: transform 0.25s ease; }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #4299e1; /* Blue */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        .image-generation-loader { /* Larger loader for image generation */
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #4299e1;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        /* Styles for page sections */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="sticky-header shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="nav-link flex items-center space-x-2 text-2xl font-bold text-vision-text">
+                <svg class="h-8 w-8 text-vision-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>VisionHub</span>
+            </a>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#home" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Home</a>
+                <a href="#dashboard" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Dashboard</a>
+                <a href="#features" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Features</a>
+                <a href="#pricing" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Pricing</a>
+                <a href="#faq" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">FAQ</a>
+                <a href="#about" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">About Us</a>
+                <a href="#contact" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Contact</a>
+                <button id="theme-toggle" class="p-2 rounded-md hover:bg-vision-dark-secondary focus:outline-none">
+                    <svg id="theme-icon-dark" class="h-5 w-5 text-vision-text-secondary hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <svg id="theme-icon-light" class="h-5 w-5 text-vision-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                </button>
+            </div>
+            <a href="#pricing" class="nav-link hidden md:inline-block bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors">Try for Free</a>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-vision-text-secondary focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-vision-dark-secondary shadow-lg">
+            <a href="#home" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">Home</a>
+            <a href="#dashboard" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">Dashboard</a>
+            <a href="#features" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">Features</a>
+            <a href="#pricing" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">Pricing</a>
+            <a href="#faq" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">FAQ</a>
+            <a href="#about" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">About Us</a>
+            <a href="#contact" class="nav-link block px-6 py-3 text-vision-text hover:bg-vision-dark transition-colors">Contact</a>
+            <div class="px-6 py-3"><a href="#pricing" class="nav-link w-full inline-block text-center bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors">Try for Free</a></div>
+            <div class="px-6 py-3 flex justify-center">
+                 <button id="mobile-theme-toggle" class="p-2 rounded-md hover:bg-vision-dark focus:outline-none">
+                    <svg id="mobile-theme-icon-dark" class="h-5 w-5 text-vision-text-secondary hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <svg id="mobile-theme-icon-light" class="h-5 w-5 text-vision-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="home-page" class="page-section">
+            <section id="hero-section-content" class="py-20 md:py-32">
+                <div class="container mx-auto px-6 text-center">
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-vision-text mb-6 animate-fade-in-up">
+                        Unify Your AI Image Creation with VisionHub
+                    </h1>
+                    <p class="text-lg md:text-xl text-vision-text-secondary mb-10 max-w-3xl mx-auto animate-fade-in-up" style="animation-delay: 0.2s;">
+                        Access multiple AI models, enhance your prompts with our intelligent assistant, and edit your creations – all in one seamless, cross-platform system.
+                    </p>
+                    <div class="space-y-4 md:space-y-0 md:space-x-4 animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <a href="#pricing" class="nav-link inline-block bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-3 px-8 rounded-lg shadow-lg text-lg transition-transform transform hover:scale-105">
+                            Start Creating for Free
+                        </a>
+                        <a href="#features" class="nav-link inline-block border-2 border-vision-accent text-vision-accent hover:bg-vision-accent hover:text-white font-semibold py-3 px-8 rounded-lg text-lg transition-colors">
+                            Explore Features
+                        </a>
+                    </div>
+                    <div class="mt-12 animate-fade-in-up" style="animation-delay: 0.5s;">
+                        <h3 class="text-xl font-semibold text-vision-text mb-3">Need Inspiration?</h3>
+                        <button id="inspire-me-button" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all transform hover:scale-105 flex items-center justify-center mx-auto">
+                            <span class="mr-2">✨ Suggest Prompt Ideas</span>
+                            <span id="inspire-loader" class="hidden loader"></span>
+                        </button>
+                        <div id="prompt-suggestions" class="mt-4 text-vision-text-secondary text-sm space-y-2 max-w-md mx-auto"></div>
+                    </div>
+                    <div class="mt-16 animate-fade-in-up" style="animation-delay: 0.6s;">
+                        <div class="bg-vision-dark-secondary rounded-xl shadow-2xl p-4 md:p-8 max-w-4xl mx-auto aspect-video overflow-hidden">
+                            <img src="https://placehold.co/1200x675/2d3748/e2e8f0?text=VisionHub+Interface+Mockup" alt="VisionHub Interface Mockup" class="rounded-lg w-full h-full object-cover" onerror="this.src='https://placehold.co/1200x675/2d3748/e2e8f0?text=VisionHub+Interface+Mockup'; this.onerror=null;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features-section-content" class="py-16 md:py-24 bg-vision-dark-secondary">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12 md:mb-16">
+                        <h2 class="text-3xl md:text-4xl font-bold text-vision-text mb-4">How VisionHub Streamlines Your Creative Workflow</h2>
+                        <p class="text-vision-text-secondary max-w-2xl mx-auto">Discover the powerful features that make VisionHub the ultimate AI image generation platform.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                        <div class="feature-card bg-vision-dark p-8 rounded-xl shadow-lg transition-all duration-300 animate-slide-in-left">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-vision-accent text-white mb-6 shadow-md"><svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">Access Multiple AIs Instantly</h3>
+                            <p class="text-vision-text-secondary text-sm">Seamlessly switch between leading AI image generators. Compare outputs and pick the perfect style without leaving VisionHub.</p>
+                            <button class="elaborate-feature-button mt-4 text-xs text-vision-accent hover:underline" data-feature-name="Access Multiple AIs Instantly" data-feature-description="Seamlessly switch between leading AI image generators. Compare outputs and pick the perfect style without leaving VisionHub.">✨ Elaborate with AI</button>
+                        </div>
+                        <div class="feature-card bg-vision-dark p-8 rounded-xl shadow-lg transition-all duration-300 animate-slide-in-left" style="animation-delay: 0.1s;">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-vision-accent text-white mb-6 shadow-md"><svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927A17.92 17.92 0 0012 2.884a17.92 17.92 0 00.951.043M12 9.75V12m0 0l1.451-1.451M12 12l-1.451-1.451M12 12l1.451 1.451M12 12l-1.451 1.451M12 12V4.5m0 7.5h.008v.008H12V12zm0 0h-.008v.008H12V12zm0 0v.008h.008V12zm0 0v.008h-.008V12z" /></svg></div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">Intelligent Prompt Crafting</h3>
+                            <p class="text-vision-text-secondary text-sm">Our AI-powered assistant helps you refine text prompts, suggesting keywords and structures to unlock higher quality results.</p>
+                            <button class="elaborate-feature-button mt-4 text-xs text-vision-accent hover:underline" data-feature-name="Intelligent Prompt Crafting" data-feature-description="Our AI-powered assistant helps you refine text prompts, suggesting keywords and structures to unlock higher quality results.">✨ Elaborate with AI</button>
+                        </div>
+                        <div class="feature-card bg-vision-dark p-8 rounded-xl shadow-lg transition-all duration-300 animate-slide-in-left" style="animation-delay: 0.2s;">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-vision-accent text-white mb-6 shadow-md"><svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">Edit Like a Pro, In-App</h3>
+                            <p class="text-vision-text-secondary text-sm">Make quick edits on the fly. Remove backgrounds, crop, apply filters, and adjust your images with our built-in tools.</p>
+                            <button class="elaborate-feature-button mt-4 text-xs text-vision-accent hover:underline" data-feature-name="Edit Like a Pro, In-App" data-feature-description="Make quick edits on the fly. Remove backgrounds, crop, apply filters, and adjust your images with our built-in tools.">✨ Elaborate with AI</button>
+                        </div>
+                        <div class="feature-card bg-vision-dark p-8 rounded-xl shadow-lg transition-all duration-300 animate-slide-in-left" style="animation-delay: 0.3s;">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-vision-accent text-white mb-6 shadow-md"><svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2zM5 19h14M5 19a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2M5 19h14" /></svg></div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">Create Anywhere, Anytime</h3>
+                            <p class="text-vision-text-secondary text-sm">Your creative hub, available wherever you are. Access VisionHub on your desktop, tablet, or mobile device.</p>
+                            <button class="elaborate-feature-button mt-4 text-xs text-vision-accent hover:underline" data-feature-name="Create Anywhere, Anytime" data-feature-description="Your creative hub, available wherever you are. Access VisionHub on your desktop, tablet, or mobile device.">✨ Elaborate with AI</button>
+                        </div>
+                        <div class="feature-card bg-vision-dark p-8 rounded-xl shadow-lg transition-all duration-300 animate-slide-in-left" style="animation-delay: 0.4s;">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-vision-accent text-white mb-6 shadow-md"><svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg></div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">Organized Image Gallery</h3>
+                            <p class="text-vision-text-secondary text-sm">Keep all your AI-generated masterpieces neatly organized with tags, metadata, and easy search functionality.</p>
+                            <button class="elaborate-feature-button mt-4 text-xs text-vision-accent hover:underline" data-feature-name="Organized Image Gallery" data-feature-description="Keep all your AI-generated masterpieces neatly organized with tags, metadata, and easy search functionality.">✨ Elaborate with AI</button>
+                        </div>
+                        <div class="feature-card bg-vision-dark p-8 rounded-xl shadow-lg transition-all duration-300 animate-slide-in-left" style="animation-delay: 0.5s;">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-vision-accent text-white mb-6 shadow-md"><svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">Secure Cloud Storage</h3>
+                            <p class="text-vision-text-secondary text-sm">Your creations are safely stored in the cloud, accessible anytime and backed up regularly. Focus on creating, not managing files.</p>
+                            <button class="elaborate-feature-button mt-4 text-xs text-vision-accent hover:underline" data-feature-name="Secure Cloud Storage" data-feature-description="Your creations are safely stored in the cloud, accessible anytime and backed up regularly. Focus on creating, not managing files.">✨ Elaborate with AI</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="testimonials-section-content" class="py-16 md:py-24">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12 md:mb-16">
+                        <h2 class="text-3xl md:text-4xl font-bold text-vision-text mb-4">Trusted by Creators and Innovators</h2>
+                        <p class="text-vision-text-secondary max-w-xl mx-auto">See how VisionHub is empowering users to bring their ideas to life.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-vision-dark-secondary p-8 rounded-xl shadow-lg">
+                            <div class="flex items-center mb-4"><img src="https://placehold.co/64x64/4299e1/ffffff?text=SL" alt="Sarah L." class="h-16 w-16 rounded-full mr-4 border-2 border-vision-accent" onerror="this.src='https://placehold.co/64x64/4299e1/ffffff?text=SL'; this.onerror=null;"><div><h4 class="font-semibold text-vision-text">Sarah L.</h4><p class="text-sm text-vision-text-secondary">Freelance Graphic Designer</p></div></div>
+                            <p class="text-vision-text-secondary italic">"VisionHub has revolutionized my workflow! The prompt enhancer is a game-changer, and having multiple AIs in one place saves me so much time."</p>
+                        </div>
+                        <div class="bg-vision-dark-secondary p-8 rounded-xl shadow-lg">
+                             <div class="flex items-center mb-4"><img src="https://placehold.co/64x64/4299e1/ffffff?text=JB" alt="John B." class="h-16 w-16 rounded-full mr-4 border-2 border-vision-accent" onerror="this.src='https://placehold.co/64x64/4299e1/ffffff?text=JB'; this.onerror=null;"><div><h4 class="font-semibold text-vision-text">John B.</h4><p class="text-sm text-vision-text-secondary">Marketing Lead, Innovatech</p></div></div>
+                            <p class="text-vision-text-secondary italic">"The quality of images and the ease of use are outstanding. VisionHub is now our go-to for all campaign visuals."</p>
+                        </div>
+                        <div class="bg-vision-dark-secondary p-8 rounded-xl shadow-lg">
+                            <div class="flex items-center mb-4"><img src="https://placehold.co/64x64/4299e1/ffffff?text=AM" alt="Alex M." class="h-16 w-16 rounded-full mr-4 border-2 border-vision-accent" onerror="this.src='https://placehold.co/64x64/4299e1/ffffff?text=AM'; this.onerror=null;"><div><h4 class="font-semibold text-vision-text">Alex M.</h4><p class="text-sm text-vision-text-secondary">Digital Artist & Hobbyist</p></div></div>
+                            <p class="text-vision-text-secondary italic">"I love experimenting with different AI styles. VisionHub makes it incredibly fun and the integrated editing tools are a fantastic bonus!"</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pricing-section-content" class="py-16 md:py-24 bg-vision-dark-secondary">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12 md:mb-16">
+                        <h2 class="text-3xl md:text-4xl font-bold text-vision-text mb-4">Simple Plans for Every Creator</h2>
+                        <p class="text-vision-text-secondary max-w-xl mx-auto">Choose the plan that's right for you and start creating today. Cancel anytime.</p>
+                    </div>
+                    <div class="grid lg:grid-cols-3 gap-8 items-stretch">
+                        <div class="bg-vision-dark p-8 rounded-xl shadow-lg flex flex-col">
+                            <h3 class="text-2xl font-semibold text-vision-text mb-2">Starter</h3>
+                            <p class="text-4xl font-bold text-vision-accent mb-1">$0<span class="text-lg font-normal text-vision-text-secondary">/month</span></p>
+                            <p class="text-vision-text-secondary mb-6 text-sm">Perfect for getting started and exploring.</p>
+                            <ul class="space-y-3 text-vision-text-secondary mb-8 flex-grow text-sm">
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>50 Image Generations/month</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Access to 2 AI Models</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Standard Prompt Assistance</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Basic Image Gallery</li>
+                            </ul>
+                            <a href="#pricing" class="nav-link w-full mt-auto block text-center bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-colors">Sign Up for Free</a>
+                        </div>
+                        <div class="bg-vision-dark p-8 rounded-xl shadow-2xl border-2 border-vision-accent flex flex-col relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-vision-accent text-white text-xs font-semibold px-3 py-1 transform translate-x-1/4 -translate-y-1/4 rotate-45">Popular</div>
+                            <h3 class="text-2xl font-semibold text-vision-text mb-2">Creator</h3>
+                            <p class="text-4xl font-bold text-vision-accent mb-1">$12<span class="text-lg font-normal text-vision-text-secondary">/month</span></p>
+                            <p class="text-vision-text-secondary mb-6 text-sm">For professionals and serious hobbyists.</p>
+                            <ul class="space-y-3 text-vision-text-secondary mb-8 flex-grow text-sm">
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>500 Image Generations/month</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Access to All AI Models</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Advanced Prompt Enhancer</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Integrated Editing Tools</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>High-Resolution Downloads</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Cross-Platform Access</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Priority Support</li>
+                            </ul>
+                            <a href="#pricing" class="nav-link w-full mt-auto block text-center bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-colors">Start 7-Day Free Trial</a>
+                        </div>
+                        <div class="bg-vision-dark p-8 rounded-xl shadow-lg flex flex-col">
+                            <h3 class="text-2xl font-semibold text-vision-text mb-2">Studio</h3>
+                            <p class="text-4xl font-bold text-vision-accent mb-1">Custom</p>
+                            <p class="text-vision-text-secondary mb-6 text-sm">For teams and businesses with specific needs.</p>
+                            <ul class="space-y-3 text-vision-text-secondary mb-8 flex-grow text-sm">
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>High Volume Generations</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Team Collaboration Features</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Dedicated Support Manager</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>API Access (Optional)</li>
+                                <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Custom Integrations</li>
+                            </ul>
+                            <a href="#contact" class="nav-link w-full mt-auto block text-center border-2 border-vision-accent text-vision-accent hover:bg-vision-accent hover:text-white font-semibold py-3 px-6 rounded-lg transition-colors">Contact Sales</a>
+                        </div>
+                    </div>
+                    <div class="text-center mt-8"><p class="text-vision-text-secondary text-sm">Want to compare features in detail? <a href="#" class="text-vision-accent hover:underline">View full comparison</a>.</p></div>
+                </div>
+            </section>
+
+            <section id="faq-section-content" class="py-16 md:py-24">
+                <div class="container mx-auto px-6 max-w-3xl">
+                    <div class="text-center mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-bold text-vision-text mb-4">Frequently Asked Questions</h2></div>
+                    <div class="space-y-6">
+                        <details class="faq-question group bg-vision-dark-secondary p-6 rounded-lg shadow-md">
+                            <summary class="flex justify-between items-center font-semibold text-vision-text cursor-pointer">What AI image generation models does VisionHub integrate with?<svg class="h-5 w-5 text-vision-text-secondary transform group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></summary>
+                            <p class="text-vision-text-secondary mt-3 text-sm">VisionHub aims to integrate with leading models like DALL-E, Stable Diffusion, MidJourney, and more. We are continuously expanding our supported AI sources to provide you with the widest range of creative options.</p>
+                        </details>
+                        <details class="faq-question group bg-vision-dark-secondary p-6 rounded-lg shadow-md">
+                            <summary class="flex justify-between items-center font-semibold text-vision-text cursor-pointer">How does the Prompt Enhancer feature work?<svg class="h-5 w-5 text-vision-text-secondary transform group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></summary>
+                            <p class="text-vision-text-secondary mt-3 text-sm">Our Prompt Enhancer uses Natural Language Processing (NLP) to analyze your input. It suggests relevant keywords, stylistic elements, and structural improvements to help you craft prompts that yield better and more precise image results from the AI models.</p>
+                        </details>
+                        <details class="faq-question group bg-vision-dark-secondary p-6 rounded-lg shadow-md">
+                            <summary class="flex justify-between items-center font-semibold text-vision-text cursor-pointer">Is VisionHub available on mobile devices?<svg class="h-5 w-5 text-vision-text-secondary transform group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></summary>
+                            <p class="text-vision-text-secondary mt-3 text-sm">Yes! VisionHub is designed to be fully responsive and accessible on desktops, tablets, and mobile devices, ensuring you can create and manage your AI images wherever you are.</p>
+                        </details>
+                         <details class="faq-question group bg-vision-dark-secondary p-6 rounded-lg shadow-md">
+                            <summary class="flex justify-between items-center font-semibold text-vision-text cursor-pointer">What are the limitations of the free plan?<svg class="h-5 w-5 text-vision-text-secondary transform group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></summary>
+                            <p class="text-vision-text-secondary mt-3 text-sm">The free "Starter" plan includes a limited number of monthly image generations, access to a subset of AI models, and standard prompt assistance. For more advanced features and higher usage limits, please consider our paid plans.</p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <section id="final-cta-section-content" class="py-16 md:py-24 bg-vision-accent">
+                <div class="container mx-auto px-6 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Transform Your Visual Content?</h2>
+                    <p class="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Join thousands of creators on VisionHub and experience the future of AI image generation.</p>
+                    <a href="#pricing" class="nav-link inline-block bg-white text-vision-accent hover:bg-gray-100 font-semibold py-3 px-10 rounded-lg shadow-lg text-lg transition-transform transform hover:scale-105">Get Started for Free</a>
+                </div>
+            </section>
+        </div> 
+        <section id="dashboard-page" class="page-section py-12 md:py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-vision-text mb-3">VisionHub Dashboard</h1>
+                    <p class="text-vision-text-secondary">Create, manage, and enhance your AI-generated images.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-vision-dark-secondary p-6 rounded-xl shadow-lg space-y-6">
+                        <div>
+                            <label for="dashboard-prompt" class="block text-sm font-medium text-vision-text-secondary mb-1">Enter Your Prompt:</label>
+                            <textarea id="dashboard-prompt" rows="4" class="w-full p-3 bg-vision-dark border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent placeholder-gray-500 text-vision-text" placeholder="e.g., A futuristic cityscape at sunset, synthwave style..."></textarea>
+                            <button id="dashboard-enhance-prompt" class="mt-2 w-full text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors flex items-center justify-center">
+                                <span class="mr-2">✨ Enhance Prompt</span>
+                                <span id="enhance-prompt-loader" class="hidden loader"></span>
+                            </button>
+                        </div>
+
+                        <div>
+                            <label for="ai-model-selector" class="block text-sm font-medium text-vision-text-secondary mb-1">Select AI Model:</label>
+                            <select id="ai-model-selector" class="w-full p-3 bg-vision-dark border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent text-vision-text">
+                                <option value="imagen-3.0">Imagen 3.0 (Gemini)</option>
+                                <option value="dall-e-placeholder" disabled>DALL-E (Coming Soon)</option>
+                                <option value="stable-diffusion-placeholder" disabled>Stable Diffusion (Coming Soon)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="aspect-ratio-selector" class="block text-sm font-medium text-vision-text-secondary mb-1">Aspect Ratio:</label>
+                            <select id="aspect-ratio-selector" class="w-full p-3 bg-vision-dark border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent text-vision-text">
+                                <option value="1:1">Square (1:1)</option>
+                                <option value="16:9">Landscape (16:9)</option>
+                                <option value="9:16">Portrait (9:16)</option>
+                                <option value="4:3">Standard (4:3)</option>
+                                <option value="3:2">Photo (3:2)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="image-style-selector" class="block text-sm font-medium text-vision-text-secondary mb-1">Image Style (Optional):</label>
+                            <input type="text" id="image-style-selector" class="w-full p-3 bg-vision-dark border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent placeholder-gray-500 text-vision-text" placeholder="e.g., photorealistic, watercolor, pixel art">
+                        </div>
+                        
+                        <button id="generate-image-button" class="w-full bg-vision-accent hover:bg-vision-accent-hover text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors flex items-center justify-center text-lg">
+                            <span id="generate-image-text">Generate Image</span>
+                            <span id="generate-image-loader" class="hidden image-generation-loader ml-3"></span>
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-vision-dark-secondary p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold text-vision-text mb-4">Generated Image</h2>
+                        <div id="image-display-area" class="bg-vision-dark w-full aspect-square rounded-lg flex items-center justify-center border border-gray-600 mb-6">
+                            <p id="image-placeholder-text" class="text-vision-text-secondary">Your generated image will appear here.</p>
+                            <img id="generated-image" src="" alt="Generated AI Image" class="hidden max-w-full max-h-full object-contain rounded-lg">
+                        </div>
+                        <div id="image-generation-status" class="text-sm text-vision-text-secondary mb-4"></div>
+
+                        <div class="border-t border-gray-600 pt-6">
+                            <h3 class="text-xl font-semibold text-vision-text mb-3">My Gallery (Coming Soon)</h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                <div class="aspect-square bg-vision-dark rounded-md flex items-center justify-center text-xs text-vision-text-secondary border border-gray-700">Image 1</div>
+                                <div class="aspect-square bg-vision-dark rounded-md flex items-center justify-center text-xs text-vision-text-secondary border border-gray-700">Image 2</div>
+                                <div class="aspect-square bg-vision-dark rounded-md flex items-center justify-center text-xs text-vision-text-secondary border border-gray-700">Image 3</div>
+                                <div class="aspect-square bg-vision-dark rounded-md flex items-center justify-center text-xs text-vision-text-secondary border border-gray-700">Image 4</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about-page" class="page-section py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12 md:mb-16">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-vision-text mb-4">About VisionHub</h1>
+                    <p class="text-xl text-vision-text-secondary max-w-2xl mx-auto">Empowering creativity through innovative AI image generation technology.</p>
+                </div>
+                <div class="max-w-3xl mx-auto space-y-8 text-vision-text-secondary">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-vision-text mb-3">Our Mission</h2>
+                        <p>At VisionHub, our mission is to democratize access to cutting-edge AI image generation tools. We believe that everyone, from professional designers to hobbyists, should be able to bring their visual ideas to life effortlessly. We strive to provide a unified, intuitive, and powerful platform that removes technical barriers and fosters boundless creativity.</p>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-semibold text-vision-text mb-3">Our Story</h2>
+                        <p>VisionHub was born from a passion for art, technology, and the incredible potential of artificial intelligence. Frustrated by the fragmented landscape of AI image tools, each with its own learning curve and limitations, our founders envisioned a single hub where creators could access the best of AI, enhance their ideas, and manage their creations seamlessly. This vision drives us to continually innovate and improve our platform.</p>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-semibold text-vision-text mb-3">Our Values</h2>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Innovation:</strong> We are committed to staying at the forefront of AI technology to offer the most advanced tools.</li>
+                            <li><strong>User-Centricity:</strong> Our users are at the heart of everything we do. We design for ease of use and powerful results.</li>
+                            <li><strong>Accessibility:</strong> We aim to make powerful AI tools available and affordable for everyone.</li>
+                            <li><strong>Creativity:</strong> We champion the power of imagination and strive to provide tools that unlock new creative possibilities.</li>
+                            <li><strong>Integrity:</strong> We operate with transparency and a commitment to ethical AI practices.</li>
+                        </ul>
+                    </div>
+                    <div class="text-center pt-8">
+                         <a href="#contact" class="nav-link inline-block bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-3 px-8 rounded-lg shadow-lg text-lg transition-transform transform hover:scale-105">
+                            Join Our Journey
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact-page" class="page-section py-16 md:py-24 bg-vision-dark-secondary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12 md:mb-16">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-vision-text mb-4">Get In Touch</h1>
+                    <p class="text-xl text-vision-text-secondary max-w-2xl mx-auto">We'd love to hear from you! Whether you have a question, feedback, or a partnership inquiry, feel free to reach out.</p>
+                </div>
+                <div class="max-w-3xl mx-auto grid md:grid-cols-2 gap-10">
+                    <div class="bg-vision-dark p-8 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold text-vision-text mb-6">Send Us a Message</h2>
+                        <form id="contact-form" action="#" method="POST">
+                            <div class="mb-4">
+                                <label for="name" class="block text-sm font-medium text-vision-text-secondary mb-1">Full Name</label>
+                                <input type="text" name="name" id="name" required class="w-full px-4 py-2 bg-vision-dark-secondary border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent placeholder-gray-500 text-vision-text">
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="block text-sm font-medium text-vision-text-secondary mb-1">Email Address</label>
+                                <input type="email" name="email" id="email" required class="w-full px-4 py-2 bg-vision-dark-secondary border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent placeholder-gray-500 text-vision-text">
+                            </div>
+                            <div class="mb-4">
+                                <label for="subject" class="block text-sm font-medium text-vision-text-secondary mb-1">Subject</label>
+                                <input type="text" name="subject" id="subject" required class="w-full px-4 py-2 bg-vision-dark-secondary border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent placeholder-gray-500 text-vision-text">
+                            </div>
+                            <div class="mb-6">
+                                <label for="message" class="block text-sm font-medium text-vision-text-secondary mb-1">Message</label>
+                                <textarea name="message" id="message" rows="4" required class="w-full px-4 py-2 bg-vision-dark-secondary border border-gray-600 rounded-lg focus:ring-vision-accent focus:border-vision-accent placeholder-gray-500 text-vision-text"></textarea>
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full bg-vision-accent hover:bg-vision-accent-hover text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-colors">Send Message</button>
+                            </div>
+                        </form>
+                        <div id="form-status" class="mt-4 text-sm"></div>
+                    </div>
+                    <div class="space-y-6 text-vision-text-secondary">
+                        <div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-2">Contact Information</h3>
+                            <p><strong class="text-vision-text-secondary">Email:</strong> <a href="mailto:support@visionhub.ai" class="text-vision-accent hover:underline">support@visionhub.ai</a></p>
+                            <p><strong class="text-vision-text-secondary">Phone:</strong> (123) 456-7890 (Placeholder)</p>
+                            <p><strong class="text-vision-text-secondary">Address:</strong> 123 Visionary Lane, Creative City, CC 12345 (Placeholder)</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-2">Business Hours</h3>
+                            <p>Monday - Friday: 9:00 AM - 6:00 PM (Your Timezone)</p>
+                            <p>Saturday - Sunday: Closed</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-vision-text mb-2">Follow Us</h3>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors" aria-label="Twitter"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.13 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.189 1.394 4.768 2.209 7.557 2.209 9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z"/></svg></a>
+                                <a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors" aria-label="LinkedIn"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg></a>
+                                <a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors" aria-label="Instagram"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.272.058 2.166.292 2.93.596.803.322 1.48.734 2.123 1.377.642.642 1.055 1.32 1.377 2.123.304.764.538 1.658.596 2.93.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.058 1.272-.292 2.166-.596 2.93-.322.803-.734 1.48-1.377 2.123-.642.642-1.32 1.055-2.123 1.377-.764.304-1.658.538-2.93.596-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.272-.058-2.166-.292-2.93-.596-.803-.322-1.48-.734-2.123-1.377-.642-.642-1.055-1.32-1.377-2.123-.304-.764-.538-1.658-.596-2.93-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.058-1.272.292-2.166.596-2.93.322-.803.734 1.48 1.377 2.123.642-.642 1.32 1.055 2.123 1.377.764-.304 1.658.538 2.93.596L12 2.163m0-2.163C8.74.001 8.309.001 7.033.058c-1.356.062-2.39.308-3.234.648-1.01.398-1.82.928-2.6 1.703S.488 4.63.09 5.64C-.25 6.484-.496 7.529-.558 8.885c-.057 1.276-.057 1.707-.057 4.949s0 3.673.057 4.949c.062 1.356.308 2.39.648 3.234.398 1.01.928 1.82 1.703 2.6s1.59 1.215 2.6 1.604c.844.34 1.878.586 3.234.648 1.276.057 1.707.057 4.949.057s3.673 0 4.949-.057c1.356-.062 2.39-.308 3.234-.648 1.01-.398 1.82-.928 2.6-1.703.774-.774 1.205-1.59 1.604-2.6.34-.844.586-1.878.648-3.234.057-1.276.057-1.707.057-4.949s0-3.673-.057-4.949c-.062-1.356-.308-2.39-.648-3.234-.398-1.01-.928-1.82-1.703-2.6S19.37.488 18.36.09c-.844-.34-1.878-.586-3.234-.648C13.722 0 13.29 0 12 0h.001zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="ai-response-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-[60] hidden opacity-0">
+            <div class="modal-content bg-vision-dark-secondary p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-lg transform scale-95">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 id="modal-title" class="text-xl font-semibold text-vision-text">AI Elaboration</h4>
+                    <button id="close-modal-button" class="text-vision-text-secondary hover:text-vision-text text-2xl">&times;</button>
+                </div>
+                <div id="modal-loader" class="flex justify-center items-center h-32 hidden"><div class="loader"></div></div>
+                <div id="modal-body" class="text-vision-text-secondary text-sm max-h-[60vh] overflow-y-auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer-main" class="py-12 md:py-16 bg-vision-dark-secondary border-t border-gray-700">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <a href="#home" class="nav-link flex items-center space-x-2 text-xl font-bold text-vision-text mb-4">
+                        <svg class="h-7 w-7 text-vision-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        <span>VisionHub</span>
+                    </a>
+                    <p class="text-vision-text-secondary text-sm">Empowering creativity through unified AI image generation.</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-vision-text mb-4">Product</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Features</a></li>
+                        <li><a href="#pricing" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Pricing</a></li>
+                        <li><a href="#home" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">How It Works</a></li>
+                        <li><a href="#home" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Integrations</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-vision-text mb-4">Company</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#about" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">About Us</a></li>
+                        <li><a href="#contact" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors">Careers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-vision-text mb-4">Support & Legal</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#faq" class="nav-link text-vision-text-secondary hover:text-vision-accent transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
+                <p class="text-vision-text-secondary">&copy; 2025 VisionHub™. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors" aria-label="Twitter"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.13 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.189 1.394 4.768 2.209 7.557 2.209 9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z"/></svg></a>
+                    <a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors" aria-label="LinkedIn"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg></a>
+                    <a href="#" class="text-vision-text-secondary hover:text-vision-accent transition-colors" aria-label="Instagram"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.272.058 2.166.292 2.93.596.803.322 1.48.734 2.123 1.377.642.642 1.055 1.32 1.377 2.123.304.764.538 1.658.596 2.93.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.058 1.272-.292 2.166-.596 2.93-.322.803-.734 1.48-1.377 2.123-.642.642-1.32 1.055-2.123 1.377-.764.304-1.658.538-2.93.596-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.272-.058-2.166-.292-2.93-.596-.803-.322-1.48-.734-2.123-1.377-.642-.642-1.055-1.32-1.377-2.123-.304-.764-.538-1.658-.596-2.93-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.058-1.272.292-2.166.596-2.93.322-.803.734 1.48 1.377 2.123.642-.642 1.32 1.055 2.123 1.377.764-.304 1.658.538 2.93.596L12 2.163m0-2.163C8.74.001 8.309.001 7.033.058c-1.356.062-2.39.308-3.234.648-1.01.398-1.82.928-2.6 1.703S.488 4.63.09 5.64C-.25 6.484-.496 7.529-.558 8.885c-.057 1.276-.057 1.707-.057 4.949s0 3.673.057 4.949c.062 1.356.308 2.39.648 3.234.398 1.01.928 1.82 1.703 2.6s1.59 1.215 2.6 1.604c.844.34 1.878.586 3.234.648 1.276.057 1.707.057 4.949.057s3.673 0 4.949-.057c1.356-.062 2.39-.308 3.234-.648 1.01-.398 1.82-.928 2.6-1.703.774-.774 1.205-1.59 1.604-2.6.34-.844.586-1.878.648-3.234.057-1.276.057-1.707.057-4.949s0-3.673-.057-4.949c-.062-1.356-.308-2.39-.648-3.234-.398-1.01-.928-1.82-1.703-2.6S19.37.488 18.36.09c-.844-.34-1.878-.586-3.234-.648C13.722 0 13.29 0 12 0h.001zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Page Navigation Logic ---
+        const pageSections = document.querySelectorAll('.page-section');
+        const navLinks = document.querySelectorAll('.nav-link'); 
+
+        function updateActivePage() {
+            let hash = window.location.hash.substring(1);
+            let targetPageId = 'home-page'; // Default to home
+
+            if (hash) {
+                if (['features', 'pricing', 'faq'].includes(hash)) {
+                    targetPageId = 'home-page'; 
+                } else if (document.getElementById(hash + '-page')) {
+                    targetPageId = hash + '-page';
+                }
+            }
+            
+            pageSections.forEach(section => {
+                if (section.id === targetPageId) {
+                    section.classList.add('active');
+                    // Scroll to sub-section if on home page and sub-section hash exists
+                    if (targetPageId === 'home-page' && hash && hash !== 'home') {
+                        const subSectionId = hash + '-section-content'; // e.g. features-section-content
+                        const subSectionElement = document.getElementById(subSectionId);
+                        if (subSectionElement) {
+                            setTimeout(() => subSectionElement.scrollIntoView({ behavior: 'smooth' }), 50);
+                        } else if (hash === 'home') { // if #home, scroll to hero
+                             setTimeout(() => document.getElementById('hero-section-content').scrollIntoView({ behavior: 'smooth' }), 50);
+                        }
+                    } else if (targetPageId !== 'home-page') { // If navigating to a full page like about or contact
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else if (targetPageId === 'home-page' && (!hash || hash === 'home')) { // Navigating to #home
+                         setTimeout(() => document.getElementById('hero-section-content').scrollIntoView({ behavior: 'smooth' }), 50);
+                    }
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+
+            navLinks.forEach(link => {
+                const linkHash = link.getAttribute('href').substring(1);
+                let currentMainPage = targetPageId.replace('-page', '');
+                if (currentMainPage === 'home' && ['features', 'pricing', 'faq'].includes(hash)) {
+                    currentMainPage = hash; // For highlighting Home sections like Features, Pricing
+                }
+
+
+                if (linkHash === currentMainPage || (linkHash === 'home' && targetPageId === 'home-page' && !['features', 'pricing', 'faq', 'about', 'contact', 'dashboard'].includes(hash)  ) ) {
+                    link.classList.add('text-vision-accent');
+                    link.classList.remove('text-vision-text-secondary');
+                } else {
+                    link.classList.remove('text-vision-accent');
+                    link.classList.add('text-vision-text-secondary');
+                }
+            });
+        }
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const targetHash = this.getAttribute('href');
+                if (targetHash.startsWith('#')) {
+                    e.preventDefault();
+                    window.location.hash = targetHash;
+                     if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        window.addEventListener('hashchange', updateActivePage);
+        document.addEventListener('DOMContentLoaded', updateActivePage);
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Dark Mode Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle');
+        const themeIconDark = document.getElementById('theme-icon-dark');
+        const themeIconLight = document.getElementById('theme-icon-light');
+        const mobileThemeIconDark = document.getElementById('mobile-theme-icon-dark');
+        const mobileThemeIconLight = document.getElementById('mobile-theme-icon-light');
+
+        const applyTheme = (isDark) => {
+            const body = document.body;
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                body.style.backgroundColor = tailwind.config.theme.extend.colors['vision-dark'];
+                body.style.color = tailwind.config.theme.extend.colors['vision-text'];
+                if (themeIconDark) themeIconDark.classList.remove('hidden');
+                if (themeIconLight) themeIconLight.classList.add('hidden');
+                if (mobileThemeIconDark) mobileThemeIconDark.classList.remove('hidden');
+                if (mobileThemeIconLight) mobileThemeIconLight.classList.add('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                body.style.backgroundColor = '#ffffff'; 
+                body.style.color = '#1a202c'; 
+                if (themeIconDark) themeIconDark.classList.add('hidden');
+                if (themeIconLight) themeIconLight.classList.remove('hidden');
+                if (mobileThemeIconDark) mobileThemeIconDark.classList.add('hidden');
+                if (mobileThemeIconLight) mobileThemeIconLight.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+        
+        let isDarkMode = localStorage.getItem('theme') === 'dark' || 
+                         (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+                         (!('theme' in localStorage)); 
+
+        applyTheme(isDarkMode); 
+
+        const toggleAction = () => {
+            isDarkMode = !isDarkMode;
+            applyTheme(isDarkMode);
+        };
+
+        if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleAction);
+        if (mobileThemeToggleBtn) mobileThemeToggleBtn.addEventListener('click', toggleAction);
+        
+        const featureCards = document.querySelectorAll('.feature-card');
+        const animateOnScroll = () => {
+            featureCards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const screenHeight = window.innerHeight;
+                if (cardTop < screenHeight * 0.85) { 
+                    card.classList.add('animate-fade-in-up'); 
+                    card.style.opacity = 1; 
+                }
+            });
+        };
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); 
+
+        // --- Gemini API Integration ---
+        const GEMINI_API_KEY = ""; 
+        const GEMINI_TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const GEMINI_IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${GEMINI_API_KEY}`;
+
+        const inspireMeButton = document.getElementById('inspire-me-button');
+        const promptSuggestionsDiv = document.getElementById('prompt-suggestions');
+        const inspireLoader = document.getElementById('inspire-loader');
+        const aiResponseModal = document.getElementById('ai-response-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const modalLoader = document.getElementById('modal-loader');
+
+        const dashboardPromptTextarea = document.getElementById('dashboard-prompt');
+        const enhancePromptButton = document.getElementById('dashboard-enhance-prompt');
+        const enhancePromptLoader = document.getElementById('enhance-prompt-loader');
+        const generateImageButton = document.getElementById('generate-image-button');
+        const generateImageLoader = document.getElementById('generate-image-loader');
+        const generateImageText = document.getElementById('generate-image-text');
+        const imageDisplayArea = document.getElementById('image-display-area');
+        const generatedImageElement = document.getElementById('generated-image');
+        const imagePlaceholderText = document.getElementById('image-placeholder-text');
+        const imageGenerationStatus = document.getElementById('image-generation-status');
+        const aiModelSelector = document.getElementById('ai-model-selector');
+        const aspectRatioSelector = document.getElementById('aspect-ratio-selector');
+        const imageStyleInput = document.getElementById('image-style-selector');
+
+
+        const showModal = (title) => {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = ''; 
+            modalLoader.classList.remove('hidden'); 
+            aiResponseModal.classList.remove('hidden');
+            setTimeout(() => { 
+                aiResponseModal.classList.remove('opacity-0');
+                aiResponseModal.querySelector('.modal-content').classList.remove('scale-95');
+            }, 10);
+        };
+
+        const hideModal = () => {
+            aiResponseModal.classList.add('opacity-0');
+            aiResponseModal.querySelector('.modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                aiResponseModal.classList.add('hidden');
+                modalLoader.classList.add('hidden');
+            }, 250); 
+        };
+        
+        if (closeModalButton) closeModalButton.addEventListener('click', hideModal);
+        if (aiResponseModal) {
+            aiResponseModal.addEventListener('click', (event) => {
+                if (event.target === aiResponseModal) { hideModal(); }
+            });
+        }
+
+        async function callGeminiTextAPI(promptText) {
+            const payload = { contents: [{ role: "user", parts: [{ text: promptText }] }] };
+            try {
+                const response = await fetch(GEMINI_TEXT_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Text API Error:', errorData);
+                    return `Error: ${errorData.error?.message || response.statusText}`;
+                }
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error('Unexpected Text API response structure:', result);
+                    return "Sorry, I couldn't generate a text response. Unexpected API structure.";
+                }
+            } catch (error) {
+                console.error('Text Fetch Error:', error);
+                return "Sorry, there was an error connecting to the AI text service.";
+            }
+        }
+        
+        async function callGeminiImageAPI(promptText, aspectRatio = "1:1") {
+             const payload = {
+                instances: [{ prompt: promptText }],
+                parameters: { 
+                    "sampleCount": 1,
+                    "aspectRatio": aspectRatio
+                }
+            };
+            try {
+                const response = await fetch(GEMINI_IMAGE_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Image API Error:', errorData);
+                    return { error: `Image API Error: ${errorData.error?.message || response.statusText}` };
+                }
+                const result = await response.json();
+                if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                    return { imageUrl: `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}` };
+                } else {
+                    console.error('Unexpected Image API response structure:', result);
+                    return { error: "Sorry, I couldn't generate an image. Unexpected API structure." };
+                }
+            } catch (error) {
+                console.error('Image Fetch Error:', error);
+                return { error: "Sorry, there was an error connecting to the AI image service." };
+            }
+        }
+
+
+        if (inspireMeButton && promptSuggestionsDiv && inspireLoader) {
+            inspireMeButton.addEventListener('click', async () => {
+                inspireLoader.classList.remove('hidden');
+                inspireMeButton.disabled = true;
+                promptSuggestionsDiv.innerHTML = '<p>Generating ideas...</p>';
+                const inspirationPrompt = "Generate 3 diverse and creative text-to-image prompt ideas suitable for an AI image generator. Each prompt should be distinct. For example, one could be fantasy, one sci-fi, one abstract. Present them as a list.";
+                const suggestionsText = await callGeminiTextAPI(inspirationPrompt);
+                if (suggestionsText.startsWith("Error:") || suggestionsText.startsWith("Sorry,")) {
+                     promptSuggestionsDiv.innerHTML = `<p class="text-red-400">${suggestionsText}</p>`;
+                } else {
+                    const ideas = suggestionsText.split('\n').map(idea => idea.trim()).filter(idea => idea.length > 0);
+                    let html = '<ul>';
+                    ideas.forEach(idea => {
+                        const cleanedIdea = idea.replace(/^[\*\-\d\.]+\s*/, '');
+                        if(cleanedIdea) html += `<li class="p-2 bg-vision-dark-secondary rounded-md mb-1">${cleanedIdea}</li>`;
+                    });
+                    html += '</ul>';
+                    promptSuggestionsDiv.innerHTML = html;
+                }
+                inspireLoader.classList.add('hidden');
+                inspireMeButton.disabled = false;
+            });
+        }
+
+        const elaborateButtons = document.querySelectorAll('.elaborate-feature-button');
+        elaborateButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const featureName = button.dataset.featureName;
+                const featureDescription = button.dataset.featureDescription;
+                showModal(`✨ AI Elaboration: ${featureName}`);
+                const elaborationPrompt = `Explain the feature "${featureName}" which is described as "${featureDescription}" in more detail for a SaaS product landing page. Focus on user benefits and potential use cases. Keep it concise, around 2-3 paragraphs.`;
+                const elaboratedText = await callGeminiTextAPI(elaborationPrompt);
+                modalLoader.classList.add('hidden');
+                if (elaboratedText.startsWith("Error:") || elaboratedText.startsWith("Sorry,")) {
+                    modalBody.innerHTML = `<p class="text-red-400">${elaboratedText}</p>`;
+                } else {
+                    const paragraphs = elaboratedText.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+                    modalBody.innerHTML = paragraphs.map(p => `<p class="mb-3">${p}</p>`).join('');
+                }
+            });
+        });
+
+        // Dashboard: Enhance Prompt
+        if (enhancePromptButton && dashboardPromptTextarea && enhancePromptLoader) {
+            enhancePromptButton.addEventListener('click', async () => {
+                const currentPrompt = dashboardPromptTextarea.value.trim();
+                if (!currentPrompt) {
+                    alert("Please enter a prompt to enhance."); // Replace with custom modal later
+                    return;
+                }
+                enhancePromptLoader.classList.remove('hidden');
+                enhancePromptButton.disabled = true;
+                const enhancementInstruction = `Enhance the following text-to-image prompt to make it more vivid, detailed, and likely to produce a high-quality image. Add stylistic suggestions if appropriate but keep the core subject: "${currentPrompt}"`;
+                const enhancedPrompt = await callGeminiTextAPI(enhancementInstruction);
+                
+                if (enhancedPrompt.startsWith("Error:") || enhancedPrompt.startsWith("Sorry,")) {
+                    // Display error to user (e.g., in a status message area on dashboard)
+                    imageGenerationStatus.textContent = enhancedPrompt;
+                    imageGenerationStatus.classList.remove('text-green-400');
+                    imageGenerationStatus.classList.add('text-red-400');
+                } else {
+                    dashboardPromptTextarea.value = enhancedPrompt;
+                }
+                enhancePromptLoader.classList.add('hidden');
+                enhancePromptButton.disabled = false;
+            });
+        }
+
+        // Dashboard: Generate Image
+        if (generateImageButton && dashboardPromptTextarea && generatedImageElement && imagePlaceholderText && imageGenerationStatus && generateImageLoader) {
+            generateImageButton.addEventListener('click', async () => {
+                const prompt = dashboardPromptTextarea.value.trim();
+                const selectedModel = aiModelSelector.value;
+                const aspectRatio = aspectRatioSelector.value;
+                const style = imageStyleInput.value.trim();
+
+                if (!prompt) {
+                    imageGenerationStatus.textContent = "Please enter a prompt to generate an image.";
+                    imageGenerationStatus.classList.add('text-red-400');
+                    imageGenerationStatus.classList.remove('text-green-400');
+                    return;
+                }
+
+                generateImageLoader.classList.remove('hidden');
+                generateImageText.classList.add('hidden');
+                generateImageButton.disabled = true;
+                imagePlaceholderText.classList.add('hidden');
+                generatedImageElement.classList.add('hidden');
+                generatedImageElement.src = "";
+                imageGenerationStatus.textContent = "Generating your image... This may take a moment.";
+                imageGenerationStatus.classList.remove('text-red-400', 'text-green-400');
+
+
+                let finalPrompt = prompt;
+                if (style) {
+                    finalPrompt += `, ${style}`; // Append style to prompt
+                }
+
+                if (selectedModel === "imagen-3.0") {
+                    const result = await callGeminiImageAPI(finalPrompt, aspectRatio);
+                    if (result.imageUrl) {
+                        generatedImageElement.src = result.imageUrl;
+                        generatedImageElement.classList.remove('hidden');
+                        imageGenerationStatus.textContent = "Image generated successfully!";
+                        imageGenerationStatus.classList.add('text-green-400');
+                    } else {
+                        imagePlaceholderText.classList.remove('hidden');
+                        imageGenerationStatus.textContent = result.error || "Failed to generate image.";
+                        imageGenerationStatus.classList.add('text-red-400');
+                    }
+                } else {
+                    // Placeholder for other models
+                    imageGenerationStatus.textContent = `Model ${selectedModel} is not yet implemented.`;
+                     imageGenerationStatus.classList.add('text-yellow-400');
+                    imagePlaceholderText.classList.remove('hidden');
+                }
+
+                generateImageLoader.classList.add('hidden');
+                generateImageText.classList.remove('hidden');
+                generateImageButton.disabled = false;
+            });
+        }
+
+
+        const contactForm = document.getElementById('contact-form');
+        const formStatus = document.getElementById('form-status');
+        if (contactForm && formStatus) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                formStatus.innerHTML = '<p class="text-green-400">Thank you for your message! We will get back to you soon.</p>';
+                contactForm.reset();
+                setTimeout(() => { formStatus.innerHTML = ''; }, 5000);
+            });
+        }
+
+    </script>
+</body>
+</html>
