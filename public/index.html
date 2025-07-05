@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-white">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisionHub AI Image Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+</head>
+
+<body class="font-sans">
+
+  <!-- Header -->
+  <!-- Navigation bar -->
+  <header class="fixed top-0 left-0 z-50 w-full bg-white text-black flex justify-between items-center px-6 py-4" style="font-family: 'Jersey 10'; font-weight: 400;">
+    <h1 class="font-bold text-lg" style="font-size: 40px;">VisionHub</h1>
+    <nav class="space-x-6 text-sm font-medium" style="font-size: 20px;">
+      <a href="#" class="hover:underline">About</a>
+      <a href="#" class="hover:underline">Services</a>
+      <a href="#" class="hover:underline">Contact</a>
+      <button class="border px-4 py-1 rounded hover:bg-gray-200">Login</button>
+      <button class="bg-black text-white px-4 py-1 rounded hover:bg-gray-800">Join</button>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-20 px-4 mt-24" id="hero" style="font-family: 'Nunito';">
+    <h2 class="text-5xl md:text-5xl font-bold mb-4">VisionHub AI Image Generator</h2>
+    <p class="text-gray-300 max-w-xl mx-auto mb-8">
+      Create AI Art and turn your imaginations into reality with VisionHub’s AI Art Generator and produce stunning visuals to cover up your artistic thoughts.
+    </p>
+    
+    <!-- Prompt Box -->
+    <div class="flex justify-center items-center gap-4 mb-10">
+    <input
+        type="text"
+        placeholder="a cyberpunk dystopia with a sprawling, rain-soaked cityscape"
+        class="bg-white text-black px-4 py-2 rounded-full shadow-md max-w-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+    />
+    <button class="bg-yellow-400 text-black px-5 py-2 rounded-full font-semibold hover:bg-yellow-300">
+        ⚡ Create
+    </button>
+    </div>
+  </section>
+
+  <!-- Tools Section -->
+  <section class="py-20 px-4 text-center">
+    <h3 class="text-xl font-semibold mb-2">Our AI Tools Suite</h3>
+    <p class="text-gray-400 mb-6 max-w-xl mx-auto">
+      Revolutionize your creative workflow with ImagineArt AI Tools Suite. This suite empowers you with cutting-edge AI technology.
+    </p>
+
+    <!-- Carousel placeholder (dots only) -->
+    <div class="flex justify-center space-x-2 mb-6">
+      <span class="h-2 w-2 bg-white rounded-full"></span>
+      <span class="h-2 w-2 bg-gray-500 rounded-full"></span>
+      <span class="h-2 w-2 bg-gray-500 rounded-full"></span>
+      <span class="h-2 w-2 bg-gray-500 rounded-full"></span>
+    </div>
+
+    <!-- Tool Feature -->
+    <div class="max-w-md mx-auto">
+      <h4 class="font-semibold mb-2">Text to Image</h4>
+      <p class="text-gray-400 text-sm mb-4">
+        Maintain uniformity in your storytelling with Character Consistency, which ensures all generated images consistently reflect your characters.
+      </p>
+      <button class="bg-yellow-400 text-black px-6 py-2 rounded font-medium hover:bg-yellow-300">Start using OpenAI</button>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="py-20 px-4 text-center">
+    <h3 class="text-xl font-semibold">Platform Gallery</h3>
+    <div class="mt-6">
+      <!-- Placeholder for future gallery items -->
+      <div class="h-48 bg-gray-800 rounded-md animate-pulse"></div>
+    </div>
+  </section>
+
+  <!-- FAQ Section (Optional Footer block) -->
+  <section class="py-10 text-center">
+    <button class="border px-6 py-2 rounded-full text-sm text-gray-400 hover:text-white">FAQ</button>
+  </section>
+
+</body>
+</html>
