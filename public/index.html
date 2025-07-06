@@ -9,7 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet"> -->
-  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
 </head>
 
 <body class="font-sans">
@@ -49,8 +50,8 @@
 
   <!-- Tools Section -->
   <section class="py-20 px-4 text-center">
-    <h3 class="text-xl font-semibold mb-2">Our AI Tools Suite</h3>
-    <p class="text-gray-400 mb-6 max-w-xl mx-auto">
+    <h3 class="text-xl font-semibold mb-2" style="font-family: 'Jersey 10'; font-size: 30px; font-weight: 400">Our AI Tools Suite</h3>
+    <p class="text-gray-400 mb-6 max-w-xl mx-auto" style="font-family: inter;">
       Revolutionize your creative workflow with ImagineArt AI Tools Suite. This suite empowers you with cutting-edge AI technology.
     </p>
 
@@ -84,6 +85,50 @@
   <!-- FAQ Section (Optional Footer block) -->
   <section class="py-10 text-center">
     <button class="border px-6 py-2 rounded-full text-sm text-gray-400 hover:text-white">FAQ</button>
+    <section class="px-6 py-16 bg-black text-white flex flex-col md:flex-row gap-12" id="faq-details">
+
+    <!-- Contact Prompt -->
+    <div class="flex-1" style="text-align: left;">
+      <h2 class="text-2xl font-bold mb-2 font-jersey" style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">Have Questions?</h2>
+      <h3 class="text-2xl font-bold mb-4 font-jersey" style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">We have Answers !</h3>
+      <p class="text-gray-400 mb-6">Want to know more? You can contact us anytime</p>
+      <button class="bg-yellow-400 text-black font-semibold px-6 py-2 rounded hover:bg-yellow-300">Contact Us</button>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="flex-1 space-y-4">
+      
+      <!-- Accordion Item -->
+      <details class="bg-zinc-900 rounded-md p-4">
+        <summary class="cursor-pointer font-semibold">What is PD?</summary>
+        <p class="mt-2 text-gray-300 text-sm">
+          Imagine AI is an innovative AI art generator accessible on the web, Android, and iOS platforms...
+        </p>
+      </details>
+
+      <!-- Repeat for other questions -->
+      <details class="bg-zinc-900 rounded-md p-4">
+        <summary class="cursor-pointer font-semibold">What payment options are available?</summary>
+        <p class="mt-2 text-gray-300 text-sm">You can use credit cards, PayPal, and other local payment options...</p>
+      </details>
+
+      <details class="bg-zinc-900 rounded-md p-4">
+        <summary class="cursor-pointer font-semibold">Is there a free trial?</summary>
+        <p class="mt-2 text-gray-300 text-sm">Yes, we offer a 7-day free trial with limited features.</p>
+      </details>
+
+      <details class="bg-zinc-900 rounded-md p-4">
+        <summary class="cursor-pointer font-semibold">Can I cancel my plan?</summary>
+        <p class="mt-2 text-gray-300 text-sm">Absolutely. You can cancel your plan from your account dashboard anytime.</p>
+      </details>
+
+      <details class="bg-zinc-900 rounded-md p-4">
+        <summary class="cursor-pointer font-semibold">Can I upgrade or downgrade my plan?</summary>
+        <p class="mt-2 text-gray-300 text-sm">Yes. Plan changes take effect immediately after confirmation.</p>
+      </details>
+
+    </div>
+  </section>
   </section>
 
 </body>
