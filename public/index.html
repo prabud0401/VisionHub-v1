@@ -10,14 +10,50 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet"> -->
   <!-- <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet"> -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+10&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+
+  <!-- swiper -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
+  <style>
+    .swiper-pagination-bullet {
+      background-color: white;
+      opacity: 0.5;
+    }
+
+    .swiper-pagination-bullet-active {
+      background-color: #facc15;
+      /* Tailwind's yellow-400 */
+      opacity: 1;
+    }
+
+    .peer:checked~.peer-checked\:bg-yellow-400 {
+      background-color: #facc15;
+    }
+
+    .peer:checked~.peer-checked\:text-black {
+      color: #000;
+    }
+
+    .peer:checked~.peer-checked\:translate-x-28 {
+      transform: translateX(7rem);
+    }
+  </style>
+
+
+
 </head>
 
 <body class="font-sans">
 
   <!-- Header -->
   <!-- Navigation bar -->
-  <header class="fixed top-0 left-0 z-50 w-full bg-white text-black flex justify-between items-center px-6 py-4" style="font-family: 'Jersey 10'; font-weight: 400;">
+  <header class="fixed top-0 left-0 z-50 w-full bg-white text-black flex justify-between items-center px-6 py-4"
+    style="font-family: 'Jersey 10'; font-weight: 400;">
     <h1 class="font-bold text-lg" style="font-size: 40px;">VisionHub</h1>
     <nav class="space-x-6 text-sm font-medium" style="font-size: 20px;">
       <a href="#" class="hover:underline">About</a>
@@ -32,46 +68,77 @@
   <section class="text-center py-20 px-4 mt-24" id="hero" style="font-family: 'Nunito';">
     <h2 class="text-5xl md:text-5xl font-bold mb-4">VisionHub AI Image Generator</h2>
     <p class="text-gray-300 max-w-xl mx-auto mb-8">
-      Create AI Art and turn your imaginations into reality with VisionHub’s AI Art Generator and produce stunning visuals to cover up your artistic thoughts.
+      Create AI Art and turn your imaginations into reality with VisionHub’s AI Art Generator and produce stunning
+      visuals to cover up your artistic thoughts.
     </p>
-    
+
     <!-- Prompt Box -->
-    <div class="flex justify-center items-center gap-4 mb-10">
-    <input
-        type="text"
-        placeholder="a cyberpunk dystopia with a sprawling, rain-soaked cityscape"
-        class="bg-white text-black px-4 py-2 rounded-full shadow-md max-w-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-    />
-    <button class="bg-yellow-400 text-black px-5 py-2 rounded-full font-semibold hover:bg-yellow-300">
+    <div class="flex justify-center items-center gap-4 mb-5">
+      <input type="text" placeholder="a cyberpunk dystopia with a sprawling, rain-soaked cityscape"
+        class="bg-white text-black px-4 py-2 rounded-full shadow-md max-w-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+      <button class="bg-yellow-400 text-black px-5 py-2 rounded-full font-semibold hover:bg-yellow-300">
         ⚡ Create
-    </button>
+      </button>
     </div>
   </section>
 
   <!-- Tools Section -->
-  <section class="py-20 px-4 text-center">
-    <h3 class="text-xl font-semibold mb-2" style="font-family: 'Jersey 10'; font-size: 30px; font-weight: 400">Our AI Tools Suite</h3>
-    <p class="text-gray-400 mb-6 max-w-xl mx-auto" style="font-family: inter;">
-      Revolutionize your creative workflow with ImagineArt AI Tools Suite. This suite empowers you with cutting-edge AI technology.
+  <section class="py-20 px-4 text-center text-white bg-black" , id="tools">
+    <h3 class="text-3xl font-bold mb-2 font-jersey">Our AI Tools Suite</h3>
+    <p class="text-gray-400 max-w-2xl mx-auto mb-6">
+      Revolutionize your creative workflow with ImagineArt AI Tools Suite. This suite empowers you with cutting-edge AI
+      technology
     </p>
 
-    <!-- Carousel placeholder (dots only) -->
-    <div class="flex justify-center space-x-2 mb-6">
-      <span class="h-2 w-2 bg-white rounded-full"></span>
-      <span class="h-2 w-2 bg-gray-500 rounded-full"></span>
-      <span class="h-2 w-2 bg-gray-500 rounded-full"></span>
-      <span class="h-2 w-2 bg-gray-500 rounded-full"></span>
-    </div>
+    <!-- Swiper Carousel -->
+    <div class="swiper mySwiper max-w-xl mx-auto">
+      <div class="swiper-wrapper">
 
-    <!-- Tool Feature -->
-    <div class="max-w-md mx-auto">
-      <h4 class="font-semibold mb-2">Text to Image</h4>
-      <p class="text-gray-400 text-sm mb-4">
-        Maintain uniformity in your storytelling with Character Consistency, which ensures all generated images consistently reflect your characters.
-      </p>
-      <button class="bg-yellow-400 text-black px-6 py-2 rounded font-medium hover:bg-yellow-300">Start using OpenAI</button>
+        <!-- Slide 1 -->
+        <div class="swiper-slide p-7">
+          <h4 class="text-lg font-semibold mb-1">Text to Image</h4>
+          <p class="text-sm text-gray-300 mb-4">
+            <strong>Character Consistency</strong><br />
+            Ensure all generated images
+            consistently reflect your characters.
+          </p>
+          <button class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300">
+            Start using OpenAI
+          </button>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="swiper-slide p-7">
+          <h4 class="text-lg font-semibold mb-1">Multi-Source Image Generation</h4>
+          <p class="text-sm text-gray-300 mb-4">
+            <strong>Varied Creation</strong><br />
+            Integration with multiple AI generators for varied image creation options.
+          </p>
+          <button class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300">
+            Explore Sources
+          </button>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="swiper-slide p-7">
+          <h4 class="text-lg font-semibold mb-1">Prompt Enhancer</h4>
+          <p class="text-sm text-gray-300 mb-4">
+            <strong>Input Optimization</strong><br />
+            Optimizes user inputs for better image results.
+          </p>
+          <button class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300">
+            Enhance Prompt
+          </button>
+        </div>
+
+        <!-- Add more slides if needed -->
+      </div>
+
+      <!-- Pagination -->
+      <div class="swiper-pagination mt-6"></div>
     </div>
   </section>
+
 
   <!-- Gallery Section -->
   <section class="py-20 px-4 text-center">
@@ -83,53 +150,166 @@
   </section>
 
   <!-- FAQ Section (Optional Footer block) -->
-  <section class="py-10 text-center">
+  <section class="py-10 text-center" id="faq">
     <button class="border px-6 py-2 rounded-full text-sm text-gray-400 hover:text-white">FAQ</button>
     <section class="px-6 py-16 bg-black text-white flex flex-col md:flex-row gap-12" id="faq-details">
 
-    <!-- Contact Prompt -->
-    <div class="flex-1" style="text-align: left;">
-      <h2 class="text-2xl font-bold mb-2 font-jersey" style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">Have Questions?</h2>
-      <h3 class="text-2xl font-bold mb-4 font-jersey" style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">We have Answers !</h3>
-      <p class="text-gray-400 mb-6">Want to know more? You can contact us anytime</p>
-      <button class="bg-yellow-400 text-black font-semibold px-6 py-2 rounded hover:bg-yellow-300">Contact Us</button>
-    </div>
+      <!-- Contact Prompt -->
+      <div class="flex-1" style="text-align: left;">
+        <h2 class="text-2xl font-bold mb-2 font-jersey"
+          style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">Have Questions?</h2>
+        <h3 class="text-2xl font-bold mb-4 font-jersey"
+          style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">We have Answers !</h3>
+        <p class="text-gray-400 mb-6">Want to know more? You can contact us anytime</p>
+        <button class="bg-yellow-400 text-black font-semibold px-6 py-2 rounded hover:bg-yellow-300">Contact Us</button>
+      </div>
 
-    <!-- FAQ Accordion -->
-    <div class="flex-1 space-y-4">
-      
-      <!-- Accordion Item -->
-      <details class="bg-zinc-900 rounded-md p-4">
-        <summary class="cursor-pointer font-semibold">What is PD?</summary>
-        <p class="mt-2 text-gray-300 text-sm">
-          Imagine AI is an innovative AI art generator accessible on the web, Android, and iOS platforms...
-        </p>
-      </details>
+      <!-- FAQ Accordion -->
+      <div class="flex-1 space-y-4">
 
-      <!-- Repeat for other questions -->
-      <details class="bg-zinc-900 rounded-md p-4">
-        <summary class="cursor-pointer font-semibold">What payment options are available?</summary>
-        <p class="mt-2 text-gray-300 text-sm">You can use credit cards, PayPal, and other local payment options...</p>
-      </details>
+        <!-- Accordion Item -->
+        <details class="bg-zinc-900 rounded-md p-4">
+          <summary class="cursor-pointer font-semibold">What is PD?</summary>
+          <p class="mt-2 text-gray-300 text-sm">
+            Imagine AI is an innovative AI art generator accessible on the web, Android, and iOS platforms...
+          </p>
+        </details>
 
-      <details class="bg-zinc-900 rounded-md p-4">
-        <summary class="cursor-pointer font-semibold">Is there a free trial?</summary>
-        <p class="mt-2 text-gray-300 text-sm">Yes, we offer a 7-day free trial with limited features.</p>
-      </details>
+        <!-- Repeat for other questions -->
+        <details class="bg-zinc-900 rounded-md p-4">
+          <summary class="cursor-pointer font-semibold">What payment options are available?</summary>
+          <p class="mt-2 text-gray-300 text-sm">You can use credit cards, PayPal, and other local payment options...</p>
+        </details>
 
-      <details class="bg-zinc-900 rounded-md p-4">
-        <summary class="cursor-pointer font-semibold">Can I cancel my plan?</summary>
-        <p class="mt-2 text-gray-300 text-sm">Absolutely. You can cancel your plan from your account dashboard anytime.</p>
-      </details>
+        <details class="bg-zinc-900 rounded-md p-4">
+          <summary class="cursor-pointer font-semibold">Is there a free trial?</summary>
+          <p class="mt-2 text-gray-300 text-sm">Yes, we offer a 7-day free trial with limited features.</p>
+        </details>
 
-      <details class="bg-zinc-900 rounded-md p-4">
-        <summary class="cursor-pointer font-semibold">Can I upgrade or downgrade my plan?</summary>
-        <p class="mt-2 text-gray-300 text-sm">Yes. Plan changes take effect immediately after confirmation.</p>
-      </details>
+        <details class="bg-zinc-900 rounded-md p-4">
+          <summary class="cursor-pointer font-semibold">Can I cancel my plan?</summary>
+          <p class="mt-2 text-gray-300 text-sm">Absolutely. You can cancel your plan from your account dashboard
+            anytime.</p>
+        </details>
 
+        <details class="bg-zinc-900 rounded-md p-4">
+          <summary class="cursor-pointer font-semibold">Can I upgrade or downgrade my plan?</summary>
+          <p class="mt-2 text-gray-300 text-sm">Yes. Plan changes take effect immediately after confirmation.</p>
+        </details>
+
+      </div>
+    </section>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="px-6 py-16 text-center" id="price">
+    <button class="border px-6 py-2 rounded-full text-sm text-gray-400 hover:text-white">OUR PRICING</button>
+    <h2 class="text-2xl font-bold mb-2 mt-6" style="font-family: 'Jersey 10'; font-weight: 400; font-size:35px">Get
+      Started With Our App</h2>
+    <p class="text-gray-400 max-w-2xl mx-auto mb-8">Choose the plan that suits your creative needs and unlock the full
+      potential of VisionHub AI.</p>
+
+    <!-- Billing Toggle -->
+    <label class="relative inline-flex cursor-pointer items-center">
+      <input type="checkbox" value="" checked class="peer sr-only" />
+      <div
+        class="peer flex h-8 items-center gap-4 rounded-full bg-yellow-600 px-3 after:absolute after:left-1 after: after:h-6 after:w-16 after:rounded-full after:bg-white/40 after:transition-all after:content-[''] peer-checked:bg-stone-600 peer-checked:after:translate-x-full peer-focus:outline-none dark:border-slate-600 dark:bg-slate-700 text-sm text-white">
+        <span>Anually</span>
+        <span>Monthly</span>
+      </div>
+    </label>
+
+    <!-- Pricing Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-3">
+      <!-- Basic Plan -->
+      <div class="bg-zinc-900 rounded-lg p-6 flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-semibold mb-4" style="font-family: 'Jersey 10'; font-size: 24px;">Basic</h3>
+          <p class="text-gray-400 mb-4">Perfect for beginners exploring AI art generation.</p>
+          <div class="text-3xl font-bold mb-4" style="font-family: 'Nunito';">
+            <span class="monthly-price">LKR 5000</span><span class="yearly-price hidden">$95.90</span>
+            <span class="text-sm text-gray-400">/month</span>
+          </div>
+          <ul class="text-gray-300 text-sm space-y-2 mb-6 text-left">
+            <li>✔ 100 image generations/month</li>
+            <li>✔ Standard styles & models</li>
+            <li>✔ Web & Android access</li>
+            <li>✔ Basic support</li>
+          </ul>
+        </div>
+        <button class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300">Choose
+          Basic</button>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="bg-zinc-900 rounded-lg p-6 flex flex-col justify-between border-2 border-yellow-400">
+        <div>
+          <h3 class="text-xl font-semibold mb-4" style="font-family: 'Jersey 10'; font-size: 24px;">Pro</h3>
+          <p class="text-gray-400 mb-4">Ideal for professionals needing advanced features.</p>
+          <div class="text-3xl font-bold mb-4" style="font-family: 'Nunito';">
+            <span class="monthly-price">LKR 50000</span><span class="yearly-price hidden">$191.90</span>
+            <span class="text-sm text-gray-400">/month</span>
+          </div>
+          <ul class="text-gray-300 text-sm space-y-2 mb-6 text-left">
+            <li>✔ 500 image generations/month</li>
+            <li>✔ Advanced styles & models</li>
+            <li>✔ Commercial license</li>
+            <li>✔ Priority support</li>
+            <li>✔ Early access to new features</li>
+          </ul>
+        </div>
+        <button class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300">Choose Pro</button>
+      </div>
+
+      <!-- Enterprise Plan -->
+      <div class="bg-zinc-900 rounded-lg p-6 flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-semibold mb-4" style="font-family: 'Jersey 10'; font-size: 24px;">Enterprise</h3>
+          <p class="text-gray-400 mb-4">For teams needing unlimited creative power.</p>
+          <div class="text-3xl font-bold mb-4" style="font-family: 'Nunito';">
+            <span class="monthly-price">LKR 500000</span><span class="yearly-price hidden">$479.90</span>
+            <span class="text-sm text-gray-400">/month</span>
+          </div>
+          <ul class="text-gray-300 text-sm space-y-2 mb-6 text-left">
+            <li>✔ Unlimited image generations</li>
+            <li>✔ All styles & models</li>
+            <li>✔ Commercial license</li>
+            <li>✔ Dedicated support</li>
+            <li>✔ Custom integrations</li>
+          </ul>
+        </div>
+        <button class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300">Choose
+          Enterprise</button>
+      </div>
     </div>
   </section>
-  </section>
+
+
+
+  <!-- for the sweeper slide show in tools section -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const swiper = new Swiper('.mySwiper', {
+        loop: true,
+        slidesPerView: 1,
+        centeredSlides: true,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        autoplay: {
+          delay: 3000, // 3000ms = 3 seconds
+          disableOnInteraction: false, // keep autoplay after user interaction
+        },
+      });
+    });
+  </script>
+
+
 
 </body>
+
 </html>
